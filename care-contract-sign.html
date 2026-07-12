@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>援JOYケアサポーター 居宅介護支援契約書</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-primary: #1a3a5c;
+  --color-border: #333;
+  --color-light-border: #999;
+  --color-bg: #fff;
+  --color-section-bg: #f8f9fa;
+  --color-accent: #c0392b;
+  --color-btn: #2c3e50;
+  --color-btn-hover: #1a252f;
+  --color-clear: #e74c3c;
+  --color-clear-hover: #c0392b;
+  --color-download: #27ae60;
+  --color-download-hover: #1e8449;
+}
+
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #222;
+  background: #eef1f5;
+  -webkit-text-size-adjust: 100%;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.contract-paper {
+  background: var(--color-bg);
+  padding: 40px 36px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 6px;
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 14px;
+  margin-bottom: 28px;
+  color: var(--color-primary);
+}
+
+/* ---------- セクションタイトル ---------- */
+.section-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 36px 0 20px;
+  padding: 12px;
+  border-top: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  letter-spacing: 3px;
+}
+
+.section-title:first-child { margin-top: 0; }
+
+.sub-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 24px 0 10px;
+  color: var(--color-primary);
+  border-left: 4px solid var(--color-primary);
+  padding-left: 10px;
+}
+
+/* ---------- 入力フィールド ---------- */
+.input-section {
+  background: var(--color-section-bg);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 24px;
+  margin-bottom: 30px;
+}
+
+.input-section h2 {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: var(--color-primary);
+  border-left: 4px solid var(--color-primary);
+  padding-left: 10px;
+}
+
+.field-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field.full { grid-column: 1 / -1; }
+
+.field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.field input, .field select {
+  padding: 10px 12px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 15px;
+  font-family: inherit;
+  background: #fff;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field input:focus, .field select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(26,58,92,0.15);
+}
+
+.optional-note {
+  font-size: 11px;
+  color: #888;
+  margin-top: -6px;
+  margin-bottom: 10px;
+}
+
+/* ---------- テーブル ---------- */
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 16px;
+  font-size: 13px;
+}
+
+.info-table th, .info-table td {
+  border: 1px solid #999;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.info-table th {
+  background: #f0f2f5;
+  font-weight: 600;
+  white-space: nowrap;
+  width: 30%;
+  text-align: center;
+}
+
+.info-table td { width: 70%; }
+
+.info-table-3col th, .info-table-3col td {
+  width: auto;
+}
+
+.info-table-3col th { text-align: center; }
+
+/* ---------- 契約書本文 ---------- */
+.contract-body { margin-top: 10px; }
+
+.article {
+  margin-bottom: 20px;
+  page-break-inside: avoid;
+}
+
+.article-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--color-primary);
+}
+
+.article p {
+  margin-left: 0.5em;
+  margin-bottom: 6px;
+  text-indent: 0;
+}
+
+.article .indent { margin-left: 1.5em; }
+.article .indent2 { margin-left: 2.5em; }
+
+.article ol, .article ul {
+  margin-left: 1.5em;
+  margin-bottom: 6px;
+}
+
+.article ol { list-style: none; padding-left: 0; }
+.article ul { list-style: disc; padding-left: 1em; }
+.article li { margin-bottom: 3px; }
+
+.preamble {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa;
+  line-height: 2;
+  text-align: center;
+  font-size: 14px;
+}
+
+.cover-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 10px 0 30px;
+  letter-spacing: 4px;
+  color: var(--color-primary);
+}
+
+.cover-list {
+  text-align: center;
+  font-size: 15px;
+  margin-bottom: 30px;
+  line-height: 2.2;
+}
+
+/* ---------- チェックボックス ---------- */
+.consent-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.consent-check input[type="checkbox"] {
+  margin-top: 5px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+}
+
+/* ---------- 署名欄 ---------- */
+.signature-section {
+  margin-top: 36px;
+  border-top: 2px solid var(--color-primary);
+  padding-top: 24px;
+}
+
+.signature-section h2 {
+  text-align: center;
+  font-size: 17px;
+  margin-bottom: 20px;
+  color: var(--color-primary);
+}
+
+.signature-block {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 24px;
+  background: #fafbfc;
+}
+
+.signature-block h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signature-block h3::before {
+  content: "";
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+.canvas-wrapper {
+  position: relative;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  background: #fff;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.canvas-wrapper canvas {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.signature-guide {
+  position: absolute;
+  bottom: 40px;
+  left: 10%;
+  right: 10%;
+  border-bottom: 1px dashed #ccc;
+  pointer-events: none;
+}
+
+.signature-label {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 11px;
+  color: #aaa;
+  pointer-events: none;
+}
+
+.sig-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: manipulation;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-clear {
+  background: var(--color-clear);
+  color: #fff;
+}
+.btn-clear:hover { background: var(--color-clear-hover); }
+
+.btn-download {
+  background: var(--color-download);
+  color: #fff;
+  font-size: 16px;
+  padding: 14px 32px;
+}
+.btn-download:hover { background: var(--color-download-hover); }
+
+/* ---------- PDF生成ボタン ---------- */
+.action-bar {
+  text-align: center;
+  padding: 20px 0 40px;
+}
+
+.action-bar p {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #777;
+}
+
+/* ---------- ローディング ---------- */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay.active { display: flex; }
+
+.overlay-content {
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+
+.spinner {
+  width: 44px; height: 44px;
+  border: 4px solid #ddd;
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- レスポンシブ ---------- */
+@media (max-width: 700px) {
+  .contract-paper { padding: 24px 18px; }
+  .field-group { grid-template-columns: 1fr; }
+  h1 { font-size: 18px; letter-spacing: 3px; }
+  .section-title { font-size: 15px; }
+  .info-table th, .info-table td { padding: 6px 8px; font-size: 12px; }
+}
+
+/* ---------- 印刷 ---------- */
+@media print {
+  body { background: #fff; }
+  .container { padding: 0; }
+  .contract-paper { box-shadow: none; border: none; padding: 20px; }
+  .btn, .action-bar, .overlay { display: none !important; }
+  .input-section { background: none; border: none; padding: 0; }
+  .field input { border: none; border-bottom: 1px solid #333; border-radius: 0; padding: 4px 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="contract-paper" id="contractContent">
+
+    <!-- ===== 表紙 ===== -->
+    <div class="cover-title">援JOYケアサポーター</div>
+    <div class="preamble">
+      <strong style="font-size:16px;">説明書類</strong><br><br>
+      ・重要事項説明<br>
+      ・個人情報使用同意<br>
+      ・居宅介護支援契約約款
+    </div>
+
+    <!-- ===== 契約書本文 ===== -->
+    <div class="contract-body" id="contractBody">
+
+      <!-- =============================================== -->
+      <!-- 居宅介護支援重要事項説明 -->
+      <!-- =============================================== -->
+      <div class="section-title">居宅介護支援重要事項説明</div>
+
+      <!-- 1. 事業者 -->
+      <div class="sub-section-title">１．事業者</div>
+      <table class="info-table">
+        <tr><th>事業者の名称</th><td>株式会社エンジョイライフサポーター</td></tr>
+        <tr><th>法人所在地</th><td>富山県高岡市開発本町６番１４号</td></tr>
+        <tr><th>法人種別</th><td>株式会社</td></tr>
+        <tr><th>代表者氏名</th><td>代表取締役 畑野 充則</td></tr>
+        <tr><th>電話番号</th><td>0766-26-7071</td></tr>
+      </table>
+
+      <!-- 2. 運営の目的と方針 -->
+      <div class="sub-section-title">２．運営の目的と方針</div>
+      <div class="article">
+        <p>要介護状態にある利用者に対し適切な居宅介護支援サービスを提供することを目的とします。その運営に際しては、利用者の居宅を訪問し、要介護者の有する能力や提供を受けている指定居宅サービス、また、そのおかれている環境等の課題分析を通じて、自立した日常生活を営むことが出来るように「居宅サービス計画」等の作成及び変更をします。</p>
+        <p>また、関係市町村や地域包括支援センター及び地域の保健・医療・福祉サービスと綿密な連携および連絡調整を行い、サービス担当者会議等の開催を通じて実施状況の把握に努めます。</p>
+      </div>
+
+      <!-- 3. 概要 -->
+      <div class="sub-section-title">３．概要</div>
+
+      <div class="article">
+        <p><strong>（１）居宅介護支援事業者の指定番号およびサービス提供地域</strong></p>
+        <table class="info-table">
+          <tr><th>事業所名</th><td>援JOYケアサポーター</td></tr>
+          <tr><th>所在地</th><td>高岡市開発本町６番１４号</td></tr>
+          <tr><th>介護保険指定番号</th><td>１６７０２０２５７９</td></tr>
+          <tr><th>サービス提供地域</th><td>高岡市</td></tr>
+        </table>
+
+        <p><strong>（２）当法人のあわせて実施する事業</strong></p>
+        <table class="info-table info-table-3col">
+          <tr><th>種類</th><th>事業者名</th><th>事業者指定番号</th></tr>
+          <tr><td style="text-align:center;">訪問介護</td><td style="text-align:center;">援JOYヘルパーステーション</td><td style="text-align:center;">１６７０２０２５７９</td></tr>
+        </table>
+
+        <p><strong>（３）職員体制</strong></p>
+        <table class="info-table info-table-3col">
+          <tr><th>従業員の職種</th><th>区分</th><th>業務内容</th><th>人数</th></tr>
+          <tr><td style="text-align:center;">管理者</td><td style="text-align:center;">常勤</td><td>事業所の運営および業務全般の管理</td><td style="text-align:center;">１</td></tr>
+          <tr><td style="text-align:center;">主任介護支援専門員</td><td style="text-align:center;">常勤</td><td>居宅介護支援サービス等に係わる業務</td><td style="text-align:center;">1以上</td></tr>
+          <tr><td style="text-align:center;">介護支援専門員</td><td style="text-align:center;">常勤</td><td>居宅介護支援サービス等に係わる業務</td><td style="text-align:center;">２以上</td></tr>
+        </table>
+
+        <p><strong>（４）勤務体制</strong></p>
+        <table class="info-table">
+          <tr><th>平日（月）～（金）</th><td>午前９時００分～午後５時００分<br>原則として、土・日・祝祭日および８月１５日から８月１６日および１２月３０日から１月３日を除く<br>※２４時間常時連絡が可能な体制としています</td></tr>
+        </table>
+
+        <p><strong>（５）居宅介護支援サービスの実施概要</strong></p>
+        <table class="info-table">
+          <tr><th>事項</th><th style="width:auto;">備考</th></tr>
+          <tr><td>課題分析の方法</td><td>厚生労働省の標準課題項目に準じて最低月１回は利用者の居宅を訪問し、適切な期間に計画の実施状況の把握を行う</td></tr>
+          <tr><td>研修の参加</td><td>現任研修等、資質向上のため必要な研修に計画的に参加</td></tr>
+          <tr><td>担当者の変更</td><td>担当の介護支援専門員の変更を希望する方は対応可能</td></tr>
+        </table>
+
+        <p><strong>（６）利用料</strong></p>
+        <p>要介護認定を受けられた方は、介護保険制度から全額給付されます。</p>
+        <p>保険料の滞納により、法定代理受領が出来なくなった場合、１ヶ月につき要介護度に応じてお支払いただき、当社からサービス提供証明書を発行します。このサービス提供証明書を後日市町村の窓口に提出しますと、全額払戻を受けられます。</p>
+      </div>
+
+      <!-- 4. 苦情窓口 -->
+      <div class="sub-section-title">４．利用者からの相談または苦情に対応する窓口</div>
+      <div class="article">
+        <p><strong>（１）当事業所相談窓口</strong></p>
+        <table class="info-table">
+          <tr><th>相談窓口</th><td>援JOYケアサポーター相談窓口</td></tr>
+          <tr><th>担当者</th><td>管理者 畑野 充則</td></tr>
+          <tr><th>電話番号</th><td>０７６６－２６－７０７１</td></tr>
+          <tr><th>対応時間</th><td>午前９時００分～午後５時００分</td></tr>
+        </table>
+
+        <p><strong>（２）円滑かつ迅速に苦情処理を行う対応方針等</strong></p>
+        <p>苦情があった場合は直ちに連絡を取り、詳しい事情を聞くとともに、担当者およびサービス事業者から事情を確認します。また、管理者が必要と判断した場合は、管理者等を含み検討会議を実施し、検討の結果および具体的な回答を直ちに苦情主訴者に伝え、納得がいくような理解を求めます。</p>
+
+        <p><strong>（３）苦情があったサービス事業者に対する対応方針等</strong></p>
+        <p>サービス事業者よりの対応状況も正確に確認するとともに、その苦情の真の原因を突き止め、よりよいサービスが提供されるよう、充分な話し合い等を実施します。また、定期的にサービス事業者を訪問し、円滑な対応が図れるようにします。</p>
+
+        <p><strong>（４）苦情申立機関が下記のとおり設置されております。</strong></p>
+        <p>外部苦情相談窓口</p>
+        <table class="info-table info-table-3col">
+          <tr><td>高岡市長寿福祉課</td><td>電話番号</td><td>０７６６－２０－１３６５</td></tr>
+          <tr><td>富山県国民健康保険団体連合会</td><td>電話番号</td><td>０７６－４３１－９８３３</td></tr>
+          <tr><td>富山県福祉サービス運営適正化委員会</td><td>電話番号</td><td>０７６－４３２－３２８０</td></tr>
+        </table>
+      </div>
+
+      <!-- 5. 事故発生時 -->
+      <div class="sub-section-title">５．事故発生時の対応</div>
+      <div class="article">
+        <p>利用者に対する指定居宅介護支援の提供により事故が発生した場合は、市町村、利用者の家族に連絡を行うとともに、必要な措置を講じます。</p>
+        <p>また、利用者に対する指定居宅介護支援の提供により賠償すべき事故が発生した場合は、損害賠償を速やかに行います。</p>
+        <p>事業者の過誤及び過失の有無に関らず、サービス提供の過程において発生した利用者の身体的又は精神的に通常と異なる状態でサービス提供事業者から連絡があった場合は、下記のとおりの対応を致します。</p>
+        <p class="indent"><strong>事故発生の報告</strong><br>事故により利用者の状態に影響する可能性がある場合は、速やかに市町村（保険者）に報告します。</p>
+        <p class="indent"><strong>処理経過及び再発防止策の報告</strong><br>上記の事故報告を行った場合は、処理経過、事故発生の原因及び再発防止策を策定し市町村（保険者）に報告します。なお、軽微な事故であってもその事故についての検証を行い、再発防止に努めます。</p>
+      </div>
+
+      <!-- 6. 緊急時 -->
+      <div class="sub-section-title">６．緊急時の対応方法</div>
+      <div class="article">
+        <p>事業者はサービス事業者から緊急の連絡があった場合には、予め確認している連絡先及び医療機関に連絡を行い指示に従います。</p>
+      </div>
+
+      <!-- 7. 医療機関との連絡 -->
+      <div class="sub-section-title">７．主治の医師および医療機関等との連絡</div>
+      <div class="article">
+        <p>事業者は利用者の主治の医師および関係医療機関との間において、利用者の疾患に関する情報について必要に応じ連絡をとらせていただきます。そのことで利用者の疾患に対する対応を円滑に行うことを目的とします。この目的を果たすために、以下の対応をお願いいたします。</p>
+        <p>利用者の不測の入院時に備え、担当の居宅介護支援事業者が医療機関に伝わるよう、入院時に持参する医療保険証またはお薬手帳等に、当事業所名および担当の介護支援専門員がわかるよう、名刺を張り付ける等の対応をお願いいたします。</p>
+        <p>また、入院時には、ご本人またはご家族から、当事業所名および担当介護支援専門員の名称を伝えていただきますようお願いいたします。</p>
+      </div>
+
+      <!-- 8. 秘密の保持 -->
+      <div class="sub-section-title">８．秘密の保持</div>
+      <div class="article">
+        <p>事業者は、介護支援専門員及び事業者の使用する者は、サービス提供する上で知り得た利用者および家族に関する秘密を、正当な理由なく第三者に漏らしません。</p>
+        <p>この守秘義務は契約終了後も同様です。</p>
+        <p>事業者は、利用者から予め文書で同意を得ない限り、サービス担当者会議等において利用者の個人情報を用いません。</p>
+        <p>事業者は、利用者の家族から予め文書で同意を得ない限り、サービス担当者会議等において、当該家族の個人情報を用いません。</p>
+      </div>
+
+      <!-- 9. サービスの選択と同意 -->
+      <div class="sub-section-title">９．利用者自身によるサービスの選択と同意</div>
+      <div class="article">
+        <p>利用者自身がサービスを選択することを基本に支援しサービスの内容、利用料等の情報を適正に利用者または家族に対して提供するものとします。</p>
+        <p>指定居宅介護支援の提供の開始に際し、予め利用者に対して、複数の指定居宅サービス事業者等を紹介するように求める事が出来ること、利用者は居宅サービス計画に位置付けた指定居宅サービス事業所等の選定理由の説明を求めることができます。</p>
+        <p>特定の事業者に不当に偏した情報を提供するようなことや、利用者の選択を求めることなく同一の事業主体のみによる居宅サービス計画原案を提示することはいたしません。</p>
+        <p>居宅サービス計画等の原案に位置付けた指定居宅サービス等について、指定居宅サービス等の担当者からなる、サービス担当者会議の招集ややむをえない場合には照会等により、当該居宅サービス計画等の原案の内容について、専門的な見地からの意見を求め、利用者及び当該サービス担当者との合意を図ります。</p>
+        <p>末期のがんと診断された場合であって、日常生活上の障害が１ヶ月以内に出現すると主治の医師等が判断した場合、利用者又はその家族の同意を得た上で、主治の医師等の助言を得ながら、通常よりも頻繁に居宅訪問（モニタリング）をさせていただき、利用者の状態やサービス変更の必要性等の把握、利用者への支援を実施します。その際に把握した利用者の心身の状態を記録し、主治の医師やケアプランに位置付けた居宅サービス事業者へ提供することで、その時々の状態に即したサービス内容の調整等を行います。</p>
+      </div>
+
+      <!-- 10. 業務継続計画 -->
+      <div class="sub-section-title">１０．業務継続計画の策定</div>
+      <div class="article">
+        <p>事業所は感染症や非常災害の発生時において、利用者に対する指定居宅介護支援事業の提供を継続的に実施するため及び非常時の体制での早期の業務再開を図るための計画を策定し、当該業務継続計画に従い必要な措置を講じます。また、職員に対し業務継続計画について周知するとともに、必要な研修及び訓練を定期的に実施するよう努めます。定期的に業務継続計画の見直しを行い、必要に応じて業務継続計画の変更を行います。</p>
+      </div>
+
+      <!-- 11. 感染症予防 -->
+      <div class="sub-section-title">１１．感染症の予防及び蔓延防止のための措置</div>
+      <div class="article">
+        <p>事業所は感染症が発生し、又はまん延しないように、次の各号に掲げる措置を講じるように努めます。</p>
+        <p class="indent">事業所における感染症の予防及びまん延防止のための指針を整備します。</p>
+        <p class="indent">職員に対し感染症の予防及びまん延防止のための研修及び訓練を定期的に実施します。</p>
+      </div>
+
+      <!-- 12. 虐待の防止 -->
+      <div class="sub-section-title">１２．虐待の防止</div>
+      <div class="article">
+        <p>事業所は、虐待の発生またはその再発を防止するため、次の各号に掲げる措置を講じるよう努めます。</p>
+        <p class="indent">事業所は、虐待防止のための指針を整備し、職員に対し研修を定期的に実施します。</p>
+        <p class="indent">虐待防止の措置を講じるための担当者を置きます。</p>
+      </div>
+
+      <!-- 13. ハラスメント対策 -->
+      <div class="sub-section-title">１３．ハラスメント対策</div>
+      <div class="article">
+        <p>事業所は職場におけるハラスメント防止に取り組み、職員が働きやすい環境づくりを目指します。</p>
+        <p>利用者が事業者の職員に対して行う、暴言・暴力・嫌がらせ・誹謗中傷等の迷惑行為。セクシャルハラスメントなどの行為を禁止します。</p>
+      </div>
+
+      <!-- =============================================== -->
+      <!-- 個人情報使用同意 -->
+      <!-- =============================================== -->
+      <div class="section-title">個人情報使用同意</div>
+      <div class="article">
+        <p>私（利用者）、及びその家族の個人情報については、以下に記載するとおり必要最小限の範囲内で使用することに同意します。</p>
+
+        <p style="text-align:center; font-weight:700; margin:16px 0;">記</p>
+
+        <p><strong>使用する目的</strong></p>
+        <p class="indent">居宅サービス計画に沿って円滑にサービスを提供するために実施されるサービス担当者会議及び介護支援専門員との連絡調整等において必要な場合</p>
+        <p class="indent">利用者が自らの意思によって介護保険施設に入所されることに伴う必要最小限度の情報の提供</p>
+        <p class="indent">在宅療養をサポートする病院、診療所、薬局、訪問看護ステーション、介護事業所その他の関係者と連携を図るため、医療従事者や介護従事者その他の関係者が共有すべき介護情報を含む個人情報の提供</p>
+        <p class="indent">適切な居宅サービス計画（ケアプラン）を作成・実行し、その内容を正確に記録・確認するため、居宅介護支援事業所（援JOYケアサポーター）は、利用者様およびご家族様とのモニタリング面談や電話連絡において会話内容を録音し、以下の目的で利用する場合</p>
+        <p class="indent2">（ア）記録内容の正確性の担保、聞き間違いの防止</p>
+        <p class="indent2">（イ）サービス提供責任者等、事業所内での情報共有と連携の円滑化</p>
+        <p class="indent2">（ウ）研修等、サービス品質向上のための個人が特定されない形での利用</p>
+
+        <p><strong>使用する事業者の範囲</strong></p>
+        <p class="indent">利用者が提供を受けるすべてのサービス事業者</p>
+
+        <p><strong>使用する期間</strong></p>
+        <p class="indent">契約で定める期間</p>
+
+        <p><strong>条件</strong></p>
+        <p class="indent">個人情報の提供は必要最小限とし、提供にあたっては関係者以外の者に漏れることのないよう細心の注意を払うこと</p>
+        <p class="indent">個人情報を使用した会議においては、出席者、議事内容等を記録しておくこと</p>
+      </div>
+
+      <!-- =============================================== -->
+      <!-- 居宅介護支援契約 約款 -->
+      <!-- =============================================== -->
+      <div class="section-title">居宅介護支援契約 約款</div>
+
+      <div class="article">
+        <p>ご利用者と株式会社エンジョイライフサポーター「援JOYケアサポーター」（以下、「事業者」という。）は、事業者がご利用者に対して行う居宅介護支援について、次のとおり契約します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（目的及び内容）</div>
+        <p><strong>第１条</strong> 事業者は、ご利用者の委託を受けて、ご利用者に対し介護保険法令の趣旨にしたがって、居宅サービス計画の作成を支援し、指定居宅サービス等の提供が確保されるようにサービス事業者との連絡調整その他の便宜を図ります。</p>
+        <p>２ サービス内容の詳細は、別紙「重要事項説明書」に記載のとおりです。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（契約期間）</div>
+        <p><strong>第２条</strong> この契約期間は、契約日からご利用者の要介護認定または要支援認定の有効期間満了日までとします。</p>
+        <p>２ 上記有効期間満了日の７日前までに、ご利用者から事業者に対して、文書による契約満了の申し出がない場合は、契約は自動更新されるものとします。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（介護支援専門員）</div>
+        <p><strong>第３条</strong> 事業者は、介護保険法に定める介護支援専門員をご利用者のサービス担当者として任命し、その選定または交代を行った場合は、ご利用者にその氏名を文書で通知します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（居宅サービス計画作成の支援）</div>
+        <p><strong>第４条</strong> 事業者は、次の各号に定める事項を介護支援専門員に担当させ、居宅サービス計画作成を支援します。</p>
+        <p class="indent">（１）ご利用者の居宅を訪問し、ご利用者及びご家族に面接して情報を収集し、解決すべき課題を把握します。</p>
+        <p class="indent">（２）当該地域における指定居宅サービス事業者に関するサービスの内容、利用料等の情報を適正にご利用者及びそのご家族に提供し、ご利用者にサービスの選択を求めます。</p>
+        <p class="indent">（３）ご利用者は、複数の指定居宅サービス事業者等を紹介するよう求めることができます。</p>
+        <p class="indent">（４）ご利用者は、居宅サービス計画に位置付けた指定居宅サービス事業者等の選定理由の説明を求めることができます。</p>
+        <p class="indent">（５）提供されるサービスの目標、その達成時期、サービスを提供する上での留意点等を盛り込んだ居宅サービス計画の原案を作成いたします。</p>
+        <p class="indent">（６）居宅サービス計画の原案に位置づけた指定居宅サービス等について、保険給付の対象となるか否かを区分した上で、その種類、内容、利用料等についてご利用者及びそのご家族に説明し、ご利用者から文書による同意を受けます。</p>
+        <p class="indent">（７）その他、居宅サービス計画作成に関する必要な支援を行います。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（経過観察、再評価）</div>
+        <p><strong>第５条</strong> 事業者は、居宅サービス計画作成後、次の各号に定める事項を介護支援専門員に担当させます。</p>
+        <p class="indent">（１）ご利用者及びそのご家族と毎月連絡を取り、経過の把握に努めます</p>
+        <p class="indent">（２）居宅サービス計画の目標に沿ってサービスが提供されるよう指定居宅サービス事業者との連絡調整を行います</p>
+        <p class="indent">（３）ご利用者の状態について定期的に再評価を行い、状態の変化等に応じて居宅サービス計画変更の支援、要介護認定区分変更申請の支援等の必要な対応をします</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（施設入所への支援）</div>
+        <p><strong>第６条</strong> 事業者はご利用者が介護保険施設への入院または入所を希望した場合、ご利用者に介護保険施設の紹介その他の支援をします。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（居宅サービス計画の変更）</div>
+        <p><strong>第７条</strong> ご利用者が居宅サービス計画の変更を希望した場合、または事業者が居宅サービス計画の変更が必要と判断した場合は、事業者とご利用者双方の合意をもって居宅サービス計画を変更します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（給付管理）</div>
+        <p><strong>第８条</strong> 事業者は、居宅サービス計画作成後、その内容に基づき毎月給付管理票を作成し、富山県国民健康保険団体連合会に提出します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（要介護認定等の申請に係る援助）</div>
+        <p><strong>第９条</strong> 事業者は、ご利用者が要介護認定または要支援認定（以下「要介護認定等」という。）更新申請及び状態の変化に伴う区分変更の申請を円滑に行えるようご利用者を援助します。</p>
+        <p>２ 事業者は、ご利用者が希望する場合は、要介護認定等の申請を利用者に代わって行います。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（サービス提供の記録等）</div>
+        <p><strong>第１０条</strong> 事業者は、指定居宅介護支援の提供に関する記録をつけることとし、これをこの契約終了５年間保管します。</p>
+        <p>２ ご利用者は、事業者の営業時間内にその事業所にて、当該ご利用者に関する第１項のサービス実施記録を閲覧できます。</p>
+        <p>３ ご利用者は、当該ご利用者に関する第１項サービス実施記録の複写物の交付を希望により受けることができます。</p>
+        <p>４ 第１２条第１項から第３項の規定により、ご利用者または事業者が解約を文書で通知し、かつ、ご利用者が希望した場合、事業者は直近の居宅サービス計画およびその実施状況に関する書面を作成し、ご利用者に交付します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（料金）</div>
+        <p><strong>第１１条</strong> 事業者が提供する居宅介護支援に対するご利用者の料金は、別紙「重要事項説明書」のとおりです。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（契約の終了）</div>
+        <p><strong>第１２条</strong> ご利用者は、事業者に対して、文書で通知することにより、いつでもこの契約を解除することができます。</p>
+        <p>２ 事業者は、やむを得ない事情がある場合、ご利用者に対して、契約終了日の１ヶ月前までに理由を示した文書で通知することにより、この契約を解除することができます。この場合、事業者は当該地域の他の指定居宅介護支援事業者に関する情報をご利用者に提供します。</p>
+        <p>３ 事業者は、ご利用者またはそのご家族等が事業者や介護支援専門員に対して本契約を継続しないことのしがたい不信行為を行った場合、文書で通知することにより、直ちにこの契約を解除することができます。</p>
+        <p>４ 次の事由に該当した場合は、この契約は自動的に終了します。</p>
+        <p class="indent">（１）ご利用者が介護保険施設に入所した場合</p>
+        <p class="indent">（２）ご利用者の要介護認定区分が、自立または要支援と認定された場合</p>
+        <p class="indent">（３）ご利用者が医療機関に入院し長期の療養が見込まれる場合</p>
+        <p class="indent">（４）ご利用者が死亡した場合</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（秘密保持）</div>
+        <p><strong>第１３条</strong> 事業者、介護支援専門員および事業者の使用する者は、サービス提供をする上で知り得たご利用者およびそのご家族に関する秘密を正当な理由なく第三者に漏らしません。この守秘義務は契約終了後でも同様です。</p>
+        <p>２ 事業者は、ご利用者から予め文書で同意を得ない限り、サービス担当者会議などにおいて、ご利用者の個人情報を用いません。</p>
+        <p>３ 事業者は、ご利用者のご家族から予め文書で同意を得ない限り、サービス担当者会議等において、当該ご家族の個人情報を用いません。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（賠償責任）</div>
+        <p><strong>第１４条</strong> 事業者は、サービスの提供に伴って、事業者の責めに帰するべき事由がない限り、損害賠償責任を負いません。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（身分証携行義務）</div>
+        <p><strong>第１５条</strong> 介護支援専門員は、常に身分証を携行し、初回訪問時およびご利用者やご家族から提示を求められた時は、いつでも身分証を提示します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（相談・苦情等）</div>
+        <p><strong>第１６条</strong> 事業者は、ご利用者からの相談、苦情等に対応する窓口を設置し、自ら提供した居宅介護支援または居宅サービス計画に位置づけた指定居宅サービス等に関するご利用者の要望、苦情等に迅速かつ適切に対応します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（法令順守）</div>
+        <p><strong>第１７条</strong> 事業者は、ご利用者より委託された義務を行うにあたっては、法令を遵守し、善良なる管理者の注意を持ってその義務を遂行します。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（本契約に定めのない事項）</div>
+        <p><strong>第１８条</strong> ご利用者と事業者は、信義誠実を持って本契約を履行するものとします。</p>
+        <p>２ 本契約の定めがない事項については、介護保険法令その他諸法の定めるところを遵守し、双方が誠意を持って協議の上定めます。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（代理人）</div>
+        <p><strong>第１９条</strong> ご利用者は、代理人を選任することができます。ただし、代理人がその代理権を行使する場合は、事業者に対し、その権限を証する書面を提示してこれを行うこととします。</p>
+      </div>
+
+      <div class="article">
+        <div class="article-title">（合意管轄裁判所）</div>
+        <p><strong>第２０条</strong> ご利用者と事業者は、この契約に関してやむを得ず訴訟となる場合は、ご利用者の住所地を所轄する裁判所を第一審管轄裁判所とすることを予め合意します。</p>
+      </div>
+
+      <!-- =============================================== -->
+      <!-- 契約書及び同意書 -->
+      <!-- =============================================== -->
+      <div class="section-title">契約書及び同意書</div>
+
+      <div class="article">
+        <p>次の内容について説明を受け、内容に同意し、関係書類の交付を受けました。</p>
+        <p>その証として、本契約書及び同意書に署名を行います。</p>
+
+        <table class="info-table" style="margin-top:16px;">
+          <tr><th>対象文書</th><td>援JOYケアサポーター ご説明書類</td></tr>
+        </table>
+
+        <div style="margin: 16px 0 16px 1em;">
+          <label class="consent-check"><input type="checkbox" id="chk1"> 居宅介護支援重要事項説明及び居宅介護支援重要事項説明別紙</label>
+          <label class="consent-check"><input type="checkbox" id="chk2"> 居宅介護支援 契約約款</label>
+          <label class="consent-check"><input type="checkbox" id="chk3"> 個人情報の取り扱いに関する利用同意</label>
+          <label class="consent-check"><input type="checkbox" id="chk4"> 本契約書及び同意書を事業者が電子保存することに同意いたします</label>
+        </div>
+      </div>
+
+    </div><!-- /contract-body -->
+
+    <!-- ===== 入力フィールド：契約締結日 ===== -->
+    <div class="input-section">
+      <h2>契約情報</h2>
+      <div class="field-group">
+        <div class="field">
+          <label for="contractDate">契約締結日</label>
+          <input type="date" id="contractDate">
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ご利用者情報 ===== -->
+    <div class="input-section">
+      <h2>ご利用者</h2>
+      <div class="field-group">
+        <div class="field full">
+          <label for="userName">ご利用者 氏名</label>
+          <input type="text" id="userName" placeholder="氏名を入力">
+        </div>
+        <div class="field full">
+          <label for="userAddress">ご利用者 住所</label>
+          <input type="text" id="userAddress" placeholder="住所を入力">
+        </div>
+      </div>
+      <p class="optional-note" style="margin-top:8px;">※自署お願いいたします</p>
+    </div>
+
+    <!-- ===== 代理人情報 ===== -->
+    <div class="input-section">
+      <h2>代理人（家族代表）</h2>
+      <p class="optional-note">※ご利用者様がご記入された場合は、不要です</p>
+      <div class="field-group">
+        <div class="field">
+          <label for="proxyName">代理人 氏名</label>
+          <input type="text" id="proxyName" placeholder="氏名を入力">
+        </div>
+        <div class="field">
+          <label for="proxyRelation">続柄</label>
+          <input type="text" id="proxyRelation" placeholder="例：長男">
+        </div>
+        <div class="field full">
+          <label for="proxyAddress">代理人 住所</label>
+          <input type="text" id="proxyAddress" placeholder="住所を入力">
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ご家族代表 ===== -->
+    <div class="input-section">
+      <h2>ご家族代表</h2>
+      <p class="optional-note">※ご家族様の代表者様のご署名をお願いします</p>
+      <div class="field-group">
+        <div class="field">
+          <label for="familyName">ご家族代表 氏名</label>
+          <input type="text" id="familyName" placeholder="氏名を入力">
+        </div>
+        <div class="field">
+          <label for="familyRelation">続柄</label>
+          <input type="text" id="familyRelation" placeholder="例：長女">
+        </div>
+        <div class="field full">
+          <label for="familyAddress">ご家族代表 住所</label>
+          <input type="text" id="familyAddress" placeholder="住所を入力">
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 事業者情報（固定） ===== -->
+    <div class="input-section">
+      <h2>事業者</h2>
+      <div class="field-group">
+        <div class="field full">
+          <label>事業者名</label>
+          <input type="text" value="株式会社エンジョイライフサポーター　代表取締役 畑野 充則" readonly style="background:#f0f0f0;">
+        </div>
+        <div class="field full">
+          <label>所在地</label>
+          <input type="text" value="富山県高岡市開発本町６－１４" readonly style="background:#f0f0f0;">
+        </div>
+        <div class="field full">
+          <label for="explainerName">説明担当者</label>
+          <input type="text" id="explainerName" placeholder="説明担当者名を入力">
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 署名欄 ===== -->
+    <div class="signature-section">
+      <h2>署 名 欄</h2>
+      <p style="text-align:center; margin-bottom:20px; font-size:13px; color:#666;">上記の契約内容に同意し、以下に署名します。</p>
+
+      <div class="signature-block">
+        <h3>ご利用者（又は代理人）署名</h3>
+        <div class="canvas-wrapper" id="sigWrapperUser">
+          <canvas id="sigCanvasUser"></canvas>
+          <div class="signature-guide"></div>
+          <div class="signature-label">ご利用者署名</div>
+        </div>
+        <div class="sig-buttons">
+          <button class="btn btn-clear" onclick="clearSignature('user')">署名をクリア</button>
+        </div>
+      </div>
+
+      <div class="signature-block">
+        <h3>ご家族代表 署名</h3>
+        <div class="canvas-wrapper" id="sigWrapperFamily">
+          <canvas id="sigCanvasFamily"></canvas>
+          <div class="signature-guide"></div>
+          <div class="signature-label">ご家族代表署名</div>
+        </div>
+        <div class="sig-buttons">
+          <button class="btn btn-clear" onclick="clearSignature('family')">署名をクリア</button>
+        </div>
+      </div>
+
+      <div class="signature-block">
+        <h3>事業者（説明担当者）署名</h3>
+        <div class="canvas-wrapper" id="sigWrapperOffice">
+          <canvas id="sigCanvasOffice"></canvas>
+          <div class="signature-guide"></div>
+          <div class="signature-label">事業者署名</div>
+        </div>
+        <div class="sig-buttons">
+          <button class="btn btn-clear" onclick="clearSignature('office')">署名をクリア</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /contract-paper -->
+
+  <!-- PDF生成ボタン -->
+  <div class="action-bar">
+    <button class="btn btn-download" onclick="generatePDF()">署名入りPDFをダウンロード</button>
+    <p>※ ダウンロードにはしばらく時間がかかる場合があります</p>
+  </div>
+</div>
+
+<!-- ローディングオーバーレイ -->
+<div class="overlay" id="loadingOverlay">
+  <div class="overlay-content">
+    <div class="spinner"></div>
+    <p style="font-size:15px; font-weight:600; color:#333;">PDF を生成しています…</p>
+    <p style="font-size:12px; color:#888; margin-top:6px;">しばらくお待ちください</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ---------- 初期設定 ----------
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('contractDate').value = `${yyyy}-${mm}-${dd}`;
+
+  // ---------- 署名Canvas管理 ----------
+  const sigData = {
+    user: { canvas: null, ctx: null, drawing: false, hasContent: false, lastX: 0, lastY: 0 },
+    family: { canvas: null, ctx: null, drawing: false, hasContent: false, lastX: 0, lastY: 0 },
+    office: { canvas: null, ctx: null, drawing: false, hasContent: false, lastX: 0, lastY: 0 }
+  };
+
+  function initCanvas(key) {
+    const canvasMap = { user: 'sigCanvasUser', family: 'sigCanvasFamily', office: 'sigCanvasOffice' };
+    const wrapperMap = { user: 'sigWrapperUser', family: 'sigWrapperFamily', office: 'sigWrapperOffice' };
+    const canvas = document.getElementById(canvasMap[key]);
+    const wrapper = document.getElementById(wrapperMap[key]);
+    const ctx = canvas.getContext('2d');
+
+    sigData[key].canvas = canvas;
+    sigData[key].ctx = ctx;
+
+    function resize() {
+      const rect = wrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const w = rect.width;
+      const h = Math.max(200, w * 0.26);
+
+      canvas.style.height = h + 'px';
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#111';
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', function() { setTimeout(resize, 300); });
+
+    // ----- イベントハンドラ（全デバイス対応：PC / iPad / iPhone） -----
+    // 3 種類のイベント（Pointer / Touch / Mouse）をすべて登録し、
+    // strokeSrc ミューテックスで二重処理を防ぐ。
+    //
+    // 【iPhone Safari 対策 — 最重要】
+    // iPhone Safari では pointerdown → touchstart の順に両方発火する。
+    // touchstart で preventDefault() を呼ぶと仕様上 pointercancel が
+    // 発火し、描画が止まる。そのため Pointer Events が処理中のときは
+    // touchstart で preventDefault() を呼ばない。
+    // スクロール抑止は CSS touch-action:none に任せる。
+
+    function getLineWidth(pressure) {
+      if (pressure > 0) return 1.2 + pressure * 3.5;
+      return 2.2;
+    }
+
+    // インラインで touch-action を補強
+    canvas.style.touchAction = 'none';
+    canvas.style.webkitUserSelect = 'none';
+    canvas.style.userSelect = 'none';
+    wrapper.style.touchAction = 'none';
+
+    // どの入力ソースがストロークを握っているか
+    var strokeSrc = null; // 'pointer' | 'touch' | 'mouse' | null
+
+    function sBegin(cx, cy) {
+      var rect = canvas.getBoundingClientRect();
+      var x = cx - rect.left;
+      var y = cy - rect.top;
+      sigData[key].drawing = true;
+      sigData[key].lastX = x;
+      sigData[key].lastY = y;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function sDraw(cx, cy, pressure) {
+      if (!sigData[key].drawing) return;
+      var rect = canvas.getBoundingClientRect();
+      var x = cx - rect.left;
+      var y = cy - rect.top;
+      ctx.lineWidth = getLineWidth(pressure);
+      ctx.beginPath();
+      ctx.moveTo(sigData[key].lastX, sigData[key].lastY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      sigData[key].lastX = x;
+      sigData[key].lastY = y;
+      sigData[key].hasContent = true;
+    }
+
+    function sEnd() {
+      sigData[key].drawing = false;
+      strokeSrc = null;
+    }
+
+    // ===== Pointer Events =====
+    canvas.addEventListener('pointerdown', function(e) {
+      if (strokeSrc && strokeSrc !== 'pointer') return;
+      e.preventDefault();
+      strokeSrc = 'pointer';
+      sBegin(e.clientX, e.clientY);
+    }, { passive: false });
+
+    canvas.addEventListener('pointermove', function(e) {
+      if (strokeSrc !== 'pointer') return;
+      e.preventDefault();
+      sDraw(e.clientX, e.clientY, e.pressure || 0);
+    }, { passive: false });
+
+    canvas.addEventListener('pointerup', function(e) {
+      if (strokeSrc === 'pointer') sEnd();
+    });
+
+    canvas.addEventListener('pointercancel', function(e) {
+      if (strokeSrc === 'pointer') sEnd();
+    });
+
+    canvas.addEventListener('pointerleave', function(e) {
+      if (strokeSrc === 'pointer') sEnd();
+    });
+
+    // ===== Touch Events（Pointer Events が発火しないデバイス用フォールバック＋スクロール抑止） =====
+    canvas.addEventListener('touchstart', function(e) {
+      if (strokeSrc === 'pointer') {
+        // ★ Pointer Events が処理中 → preventDefault() を呼ばない！
+        //    呼ぶと iPhone Safari で pointercancel が発火して描画が止まる。
+        //    スクロール抑止は CSS touch-action:none で対応。
+        return;
+      }
+      e.preventDefault();
+      if (strokeSrc) return;
+      strokeSrc = 'touch';
+      var t = e.touches[0];
+      sBegin(t.clientX, t.clientY);
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', function(e) {
+      // touchmove の preventDefault は pointercancel を起こさないので安全
+      e.preventDefault();
+      if (strokeSrc !== 'touch') return;
+      var t = e.touches[0];
+      sDraw(t.clientX, t.clientY, t.force || 0);
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      if (strokeSrc === 'touch') sEnd();
+    }, { passive: false });
+
+    canvas.addEventListener('touchcancel', function(e) {
+      if (strokeSrc === 'touch') sEnd();
+    });
+
+    // ===== Mouse Events（レガシーフォールバック） =====
+    canvas.addEventListener('mousedown', function(e) {
+      if (strokeSrc) return;
+      e.preventDefault();
+      strokeSrc = 'mouse';
+      sBegin(e.clientX, e.clientY);
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+      if (strokeSrc !== 'mouse') return;
+      sDraw(e.clientX, e.clientY, 0);
+    });
+
+    canvas.addEventListener('mouseup', function(e) {
+      if (strokeSrc === 'mouse') sEnd();
+    });
+
+    canvas.addEventListener('mouseleave', function(e) {
+      if (strokeSrc === 'mouse') sEnd();
+    });
+  }
+
+  initCanvas('user');
+  initCanvas('family');
+  initCanvas('office');
+
+  // 署名クリア
+  window.clearSignature = function(key) {
+    const s = sigData[key];
+    const canvas = s.canvas;
+    const dpr = window.devicePixelRatio || 1;
+    s.ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    s.hasContent = false;
+  };
+
+  // ---------- PDF生成 ----------
+  window.generatePDF = async function() {
+    const userName = document.getElementById('userName').value.trim();
+    const contractDate = document.getElementById('contractDate').value;
+
+    if (!userName) {
+      alert('ご利用者氏名を入力してください。');
+      return;
+    }
+
+    if (!sigData.user.hasContent) {
+      alert('ご利用者の署名を記入してください。');
+      return;
+    }
+
+    // ローディング表示
+    document.getElementById('loadingOverlay').classList.add('active');
+
+    try {
+      const contentEl = document.getElementById('contractContent');
+
+      // 一時的にスタイル調整（PDF向け）
+      contentEl.style.maxWidth = '800px';
+      contentEl.style.width = '800px';
+      contentEl.style.background = '#fff';
+
+      const captureCanvas = await html2canvas(contentEl, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowWidth: 900,
+        scrollX: 0,
+        scrollY: -window.scrollY
+      });
+
+      // スタイルを戻す
+      contentEl.style.maxWidth = '';
+      contentEl.style.width = '';
+
+      const imgData = captureCanvas.toDataURL('image/jpeg', 0.92);
+      const imgWidth = captureCanvas.width;
+      const imgHeight = captureCanvas.height;
+
+      // A4サイズ（mm）
+      const { jsPDF } = window.jspdf;
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+      const margin = 10;
+      const contentWidth = pdfWidth - margin * 2;
+
+      const scaledHeight = (imgHeight * contentWidth) / imgWidth;
+      const pageContentHeight = pdfHeight - margin * 2;
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      let yOffset = 0;
+      let page = 0;
+
+      while (yOffset < scaledHeight) {
+        if (page > 0) pdf.addPage();
+
+        const sourceY = (yOffset / scaledHeight) * imgHeight;
+        const sourceH = Math.min((pageContentHeight / scaledHeight) * imgHeight, imgHeight - sourceY);
+        const destH = (sourceH / imgHeight) * scaledHeight;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = imgWidth;
+        tempCanvas.height = Math.ceil(sourceH);
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(captureCanvas, 0, sourceY, imgWidth, sourceH, 0, 0, imgWidth, sourceH);
+
+        const pageImg = tempCanvas.toDataURL('image/jpeg', 0.92);
+        pdf.addImage(pageImg, 'JPEG', margin, margin, contentWidth, destH);
+
+        yOffset += pageContentHeight;
+        page++;
+      }
+
+      // ファイル名
+      const dateStr = contractDate ? contractDate.replace(/-/g, '') : `${yyyy}${mm}${dd}`;
+      const fileName = `援JOYケアサポーター_契約書_${userName}_${dateStr}.pdf`;
+      pdf.save(fileName);
+
+    } catch (err) {
+      console.error('PDF生成エラー:', err);
+      alert('PDF生成中にエラーが発生しました。もう一度お試しください。');
+    } finally {
+      document.getElementById('loadingOverlay').classList.remove('active');
+    }
+  };
+
+})();
+</script>
+</body>
+</html>
