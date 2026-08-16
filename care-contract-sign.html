@@ -173,6 +173,37 @@ h1 {
 
 .info-table-3col th { text-align: center; }
 
+/* ---------- 利用料金表 ---------- */
+.fee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 12px;
+  font-size: 12px;
+}
+
+.fee-table th, .fee-table td {
+  border: 1px solid #999;
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+.fee-table th {
+  background: #f0f2f5;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.fee-table td.num { text-align: right; white-space: nowrap; }
+.fee-table td.cat { text-align: center; white-space: nowrap; background: #fafbfc; font-weight: 600; }
+
+.note-small {
+  font-size: 12px;
+  color: #444;
+  margin: 4px 0;
+  line-height: 1.7;
+}
+
 /* ---------- 契約書本文 ---------- */
 .contract-body { margin-top: 10px; }
 
@@ -410,6 +441,8 @@ h1 {
   h1 { font-size: 18px; letter-spacing: 3px; }
   .section-title { font-size: 15px; }
   .info-table th, .info-table td { padding: 6px 8px; font-size: 12px; }
+  .fee-table { font-size: 10px; }
+  .fee-table th, .fee-table td { padding: 4px 5px; }
 }
 
 /* ---------- 印刷 ---------- */
@@ -434,7 +467,8 @@ h1 {
       <strong style="font-size:16px;">説明書類</strong><br><br>
       ・重要事項説明<br>
       ・個人情報使用同意<br>
-      ・居宅介護支援契約約款
+      ・居宅介護支援契約約款<br><br>
+      <span style="font-size:14px;">令和８年８月12日改訂</span>
     </div>
 
     <!-- ===== 契約書本文 ===== -->
@@ -477,7 +511,7 @@ h1 {
         <p><strong>（２）当法人のあわせて実施する事業</strong></p>
         <table class="info-table info-table-3col">
           <tr><th>種類</th><th>事業者名</th><th>事業者指定番号</th></tr>
-          <tr><td style="text-align:center;">訪問介護</td><td style="text-align:center;">援JOYヘルパーステーション</td><td style="text-align:center;">１６７０２０２５７９</td></tr>
+          <tr><td style="text-align:center;">訪問介護</td><td style="text-align:center;">援JOYヘルパーステーション</td><td style="text-align:center;">１６７０２０２５８７</td></tr>
         </table>
 
         <p><strong>（３）職員体制</strong></p>
@@ -490,7 +524,7 @@ h1 {
 
         <p><strong>（４）勤務体制</strong></p>
         <table class="info-table">
-          <tr><th>平日（月）～（金）</th><td>午前９時００分～午後５時００分<br>原則として、土・日・祝祭日および８月１５日から８月１６日および１２月３０日から１月３日を除く<br>※２４時間常時連絡が可能な体制としています</td></tr>
+          <tr><th>平日（月）～（金）</th><td>午前９時００分～午後５時００分<br>原則として、土・日・祝祭日および８月１５日から８月１６日および１２月２９日から１月３日を除く<br>※２４時間常時連絡が可能な体制としています</td></tr>
         </table>
 
         <p><strong>（５）居宅介護支援サービスの実施概要</strong></p>
@@ -504,6 +538,65 @@ h1 {
         <p><strong>（６）利用料</strong></p>
         <p>要介護認定を受けられた方は、介護保険制度から全額給付されます。</p>
         <p>保険料の滞納により、法定代理受領が出来なくなった場合、１ヶ月につき要介護度に応じてお支払いただき、当社からサービス提供証明書を発行します。このサービス提供証明書を後日市町村の窓口に提出しますと、全額払戻を受けられます。</p>
+
+        <p style="margin-top:14px;"><strong>【利用料金表】</strong>（令和8年6月1日現在　1単位＝10.00円（高岡市・その他地域））</p>
+        <table class="fee-table">
+          <tr>
+            <th style="width:14%;">区分</th>
+            <th>項目</th>
+            <th style="width:18%;">単位数（1月につき）</th>
+            <th style="width:14%;">金額</th>
+          </tr>
+          <tr>
+            <td class="cat" rowspan="6">基本報酬</td>
+            <td>居宅介護支援費（Ⅰ）（ⅰ）取扱件数45件未満　要介護１・２</td>
+            <td class="num">1,086単位</td><td class="num">10,860円</td>
+          </tr>
+          <tr>
+            <td>居宅介護支援費（Ⅰ）（ⅰ）取扱件数45件未満　要介護３・４・５</td>
+            <td class="num">1,411単位</td><td class="num">14,110円</td>
+          </tr>
+          <tr>
+            <td>居宅介護支援費（Ⅰ）（ⅱ）45件以上60件未満の部分　要介護１・２</td>
+            <td class="num">544単位</td><td class="num">5,440円</td>
+          </tr>
+          <tr>
+            <td>居宅介護支援費（Ⅰ）（ⅱ）45件以上60件未満の部分　要介護３・４・５</td>
+            <td class="num">704単位</td><td class="num">7,040円</td>
+          </tr>
+          <tr>
+            <td>居宅介護支援費（Ⅰ）（ⅲ）60件以上の部分　要介護１・２</td>
+            <td class="num">326単位</td><td class="num">3,260円</td>
+          </tr>
+          <tr>
+            <td>居宅介護支援費（Ⅰ）（ⅲ）60件以上の部分　要介護３・４・５</td>
+            <td class="num">422単位</td><td class="num">4,220円</td>
+          </tr>
+          <tr>
+            <td class="cat" rowspan="14">加算</td>
+            <td>初回加算</td><td class="num">300単位</td><td class="num">3,000円</td>
+          </tr>
+          <tr><td>特定事業所加算（Ⅰ）</td><td class="num">519単位</td><td class="num">5,190円</td></tr>
+          <tr><td>特定事業所加算（Ⅱ）</td><td class="num">421単位</td><td class="num">4,210円</td></tr>
+          <tr><td>特定事業所加算（Ⅲ）</td><td class="num">323単位</td><td class="num">3,230円</td></tr>
+          <tr><td>特定事業所加算（Ａ）</td><td class="num">114単位</td><td class="num">1,140円</td></tr>
+          <tr><td>入院時情報連携加算（Ⅰ）</td><td class="num">250単位</td><td class="num">2,500円</td></tr>
+          <tr><td>入院時情報連携加算（Ⅱ）</td><td class="num">200単位</td><td class="num">2,000円</td></tr>
+          <tr><td>退院・退所加算（Ⅰ）イ／（Ⅰ）ロ</td><td class="num">450単位／600単位</td><td class="num">4,500円／6,000円</td></tr>
+          <tr><td>退院・退所加算（Ⅱ）イ／（Ⅱ）ロ</td><td class="num">600単位／750単位</td><td class="num">6,000円／7,500円</td></tr>
+          <tr><td>退院・退所加算（Ⅲ）</td><td class="num">900単位</td><td class="num">9,000円</td></tr>
+          <tr><td>通院時情報連携加算</td><td class="num">50単位</td><td class="num">500円</td></tr>
+          <tr><td>緊急時等居宅カンファレンス加算（1月に2回を限度）</td><td class="num">1回につき200単位</td><td class="num">2,000円</td></tr>
+          <tr><td>ターミナルケアマネジメント加算</td><td class="num">400単位</td><td class="num">4,000円</td></tr>
+          <tr><td>介護職員等処遇改善加算（令和8年6月新設）</td><td class="num">所定単位数の2.1％</td><td class="num">所定額の2.1％</td></tr>
+        </table>
+
+        <p class="note-small">※居宅介護支援費は全額が介護保険から給付されるため、通常、利用者負担はありません（介護職員等処遇改善加算を含む）。</p>
+        <p class="note-small">※加算は、算定要件を満たした場合に算定します。当事業所が算定する加算・区分の詳細は、担当の介護支援専門員にお尋ねください。</p>
+        <p class="note-small">※上記の単位数は令和8年6月1日現在の介護報酬に基づくものであり、介護報酬の改定があった場合は改定後の額によります。</p>
+
+        <p style="margin-top:12px;">また、通常の事業の実施地域（高岡市）を越えて行う居宅介護支援に要した交通費は、その実費をいただきます。自動車を使用した場合の交通費は、実施地域を越えた地点から片道５キロメートル未満は５００円、片道５キロメートル以上は１，０００円です。</p>
+        <p>この費用のお支払いをいただく場合には、事前に文書でご説明した上で、お支払いに同意する旨の文書にご署名をいただきます。</p>
       </div>
 
       <!-- 4. 苦情窓口 -->
@@ -602,6 +695,17 @@ h1 {
       <div class="article">
         <p>事業所は職場におけるハラスメント防止に取り組み、職員が働きやすい環境づくりを目指します。</p>
         <p>利用者が事業者の職員に対して行う、暴言・暴力・嫌がらせ・誹謗中傷等の迷惑行為。セクシャルハラスメントなどの行為を禁止します。</p>
+      </div>
+
+      <!-- 14. 第三者評価の実施状況 -->
+      <div class="sub-section-title">１４．第三者評価の実施状況</div>
+      <div class="article">
+        <p>当事業所における福祉サービス第三者評価事業の実施状況は、次のとおりです。</p>
+        <p class="indent">（１）第三者評価の実施の有無　実施していません</p>
+        <p class="indent">（２）実施した直近の年月日　―（未実施のため該当ありません）</p>
+        <p class="indent">（３）評価機関の名称　―（未実施のため該当ありません）</p>
+        <p class="indent">（４）評価結果の開示状況　―（未実施のため該当ありません）</p>
+        <p class="note-small">※当事業所は、第三者評価に代えて、事業所内での自己点検及び研修を通じてサービスの質の向上に努めています。今後、第三者評価を受審した場合には、実施年月日・評価機関の名称・評価結果の開示状況を本書に記載し、利用者及びご家族に説明いたします。</p>
       </div>
 
       <!-- =============================================== -->
