@@ -1069,11 +1069,41 @@ h1 {
     sigData[key].canvas = canvas;
     sigData[key].ctx = ctx;
 
-    function resize() {
+    // 【iPad / iPhone 対策 — 署名がスクロールで消える問題】
+    // iOS Safari はスクロールでアドレスバーが伸縮するたびに resize を発火する。
+    // canvas.width / canvas.height への代入はキャンバスを白紙に戻すため、
+    // 以下の 2 段構えで署名を守る。
+    //   (1) 幅・高さが実際に変わっていなければ何もしない（＝アドレスバー伸縮を無視）
+    //   (2) やむを得ずリサイズする場合は、描画内容を退避して復元する
+    var lastW = 0, lastH = 0, lastDpr = 0;
+
+    function resize(force) {
       const rect = wrapper.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      const w = rect.width;
-      const h = Math.max(200, w * 0.26);
+      const w = Math.round(rect.width);
+      const h = Math.round(Math.max(200, w * 0.26));
+
+      // 幅が 0（非表示中など）のときは何もしない
+      if (w === 0) return;
+
+      // (1) サイズが変わっていなければキャンバスに触らない
+      if (!force && w === lastW && h === lastH && dpr === lastDpr) return;
+
+      // 署名の途中なら中断しない
+      if (sigData[key].drawing) return;
+
+      // (2) 既存の署名を退避
+      var snapshot = null;
+      if (lastW > 0 && canvas.width > 0 && canvas.height > 0) {
+        try {
+          snapshot = document.createElement('canvas');
+          snapshot.width = canvas.width;
+          snapshot.height = canvas.height;
+          snapshot.getContext('2d').drawImage(canvas, 0, 0);
+        } catch (e) { snapshot = null; }
+      }
+
+      lastW = w; lastH = h; lastDpr = dpr;
 
       canvas.style.height = h + 'px';
       canvas.width = w * dpr;
@@ -1082,9 +1112,23 @@ h1 {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.strokeStyle = '#111';
+
+      // 退避した署名を新しいサイズに合わせて復元
+      if (snapshot && snapshot.width > 0 && snapshot.height > 0) {
+        try {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.drawImage(snapshot, 0, 0, snapshot.width, snapshot.height,
+                                  0, 0, canvas.width, canvas.height);
+          ctx.restore();
+        } catch (e) {}
+      }
     }
 
-    resize();
+    // 外部（クリアボタン等）から強制リセットできるように保持
+    sigData[key].resize = resize;
+
+    resize(true);
     window.addEventListener('resize', resize);
     window.addEventListener('orientationchange', function() { setTimeout(resize, 300); });
 
