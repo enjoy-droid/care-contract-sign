@@ -4,8 +4,65 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>援JOYケアサポーター 居宅介護支援契約書</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<!-- PDF 生成ライブラリ。
+     cdnjs の jspdf 2.5.2 は 503 を返すことがあるため 2.5.1 を既定とし、
+     万一読み込めなかった場合は下のローダーが別のミラーへ自動で切り替える。 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// ---------- ライブラリ読み込みのフォールバック ----------
+// CDN が一時的に落ちても PDF が作れるよう、複数のミラーを順に試す。
+window.__libLoader = (function () {
+  var SOURCES = {
+    jspdf: [
+      'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+      'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js'
+    ],
+    html2canvas: [
+      'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+      'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+    ]
+  };
+
+  var READY = {
+    jspdf: function () { return !!(window.jspdf && window.jspdf.jsPDF); },
+    html2canvas: function () { return typeof window.html2canvas === 'function'; }
+  };
+
+  function loadScript(url) {
+    return new Promise(function (resolve) {
+      var s = document.createElement('script');
+      var done = false;
+      function finish() { if (!done) { done = true; resolve(); } }
+      s.src = url;
+      s.async = false;
+      s.onload = finish;
+      s.onerror = finish;
+      setTimeout(finish, 12000); // 応答がない CDN で固まらないように
+      document.head.appendChild(s);
+    });
+  }
+
+  async function ensure(name) {
+    if (READY[name]()) return true;
+    var list = SOURCES[name] || [];
+    for (var i = 0; i < list.length; i++) {
+      await loadScript(list[i]);
+      if (READY[name]()) return true;
+    }
+    return READY[name]();
+  }
+
+  // ページ読み込み完了時点で足りなければ先回りして取得しておく
+  window.addEventListener('load', function () {
+    ensure('jspdf');
+    ensure('html2canvas');
+  });
+
+  return { ensure: ensure, ready: READY };
+})();
+</script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1037,7 +1094,7 @@ h1 {
   <div class="overlay-content">
     <div class="spinner"></div>
     <p style="font-size:15px; font-weight:600; color:#333;">PDF を生成しています…</p>
-    <p style="font-size:12px; color:#888; margin-top:6px;">しばらくお待ちください</p>
+    <p style="font-size:12px; color:#888; margin-top:6px;" id="loadingMessage">しばらくお待ちください</p>
   </div>
 </div>
 
@@ -1299,65 +1356,110 @@ h1 {
     // ローディング表示
     document.getElementById('loadingOverlay').classList.add('active');
 
+    const msgEl = document.getElementById('loadingMessage');
+    function progress(t) { if (msgEl) msgEl.textContent = t; }
+    progress('しばらくお待ちください');
+
+    const contentEl = document.getElementById('contractContent');
+    const prevMaxW = contentEl.style.maxWidth;
+    const prevW = contentEl.style.width;
+    const prevBg = contentEl.style.background;
+    const prevScrollY = window.scrollY;
+
     try {
-      const contentEl = document.getElementById('contractContent');
+      // ---- ライブラリの用意（CDN 障害時は別ミラーへ自動切替） ----
+      progress('準備しています…');
+      const okPdf = await window.__libLoader.ensure('jspdf');
+      const okCanvas = await window.__libLoader.ensure('html2canvas');
+      if (!okPdf || !okCanvas) {
+        throw new Error('PDF作成に必要なプログラムを読み込めませんでした。通信状況を確認のうえ、ページを再読み込みしてお試しください。');
+      }
+
+      const { jsPDF } = window.jspdf;
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+      const margin = 10;
+      const contentWidth = pdfWidth - margin * 2;   // 190mm
+      const pageHeightMm = pdfHeight - margin * 2;  // 277mm
 
       // 一時的にスタイル調整（PDF向け）
       contentEl.style.maxWidth = '800px';
       contentEl.style.width = '800px';
       contentEl.style.background = '#fff';
 
-      const captureCanvas = await html2canvas(contentEl, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        windowWidth: 900,
-        scrollX: 0,
-        scrollY: -window.scrollY
-      });
+      window.scrollTo(0, 0);
+      await new Promise(r => setTimeout(r, 120));
 
-      // スタイルを戻す
-      contentEl.style.maxWidth = '';
-      contentEl.style.width = '';
+      const cssWidth = 800;
+      const totalCssHeight = contentEl.scrollHeight;
+      const pageCssHeight = cssWidth * (pageHeightMm / contentWidth); // A4 1ページ分
+      const totalPages = Math.max(1, Math.ceil(totalCssHeight / pageCssHeight));
 
-      const imgData = captureCanvas.toDataURL('image/jpeg', 0.92);
-      const imgWidth = captureCanvas.width;
-      const imgHeight = captureCanvas.height;
+      // 【iPad / iPhone 対策 — キャンバスの上限】
+      // iOS Safari は 1 枚のキャンバスに面積・辺の長さの上限があり
+      // （およそ 16.7 メガピクセル／16384px）、契約書全体を 1 枚に描くと
+      // 上限を超えて PDF 生成が失敗する。数ページ分ずつに分けて描画する。
+      const MAX_AREA = 12e6;  // 安全側の面積上限（ピクセル）
+      const MAX_DIM = 12000;  // 安全側の辺の上限（ピクセル）
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const scale = isIOS ? 1.5 : 2;
 
-      // A4サイズ（mm）
-      const { jsPDF } = window.jspdf;
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-      const margin = 10;
-      const contentWidth = pdfWidth - margin * 2;
-
-      const scaledHeight = (imgHeight * contentWidth) / imgWidth;
-      const pageContentHeight = pdfHeight - margin * 2;
+      const pxW = cssWidth * scale;
+      const pxPerPage = pageCssHeight * scale;
+      let pagesPerSlice = Math.floor(Math.min(MAX_AREA / (pxW * pxPerPage), MAX_DIM / pxPerPage));
+      if (!isFinite(pagesPerSlice) || pagesPerSlice < 1) pagesPerSlice = 1;
 
       const pdf = new jsPDF('p', 'mm', 'a4');
+      const elRect = contentEl.getBoundingClientRect();
+      const elLeft = elRect.left + window.scrollX;
+      const elTop = elRect.top + window.scrollY;
 
-      let yOffset = 0;
-      let page = 0;
+      let pageIndex = 0;
 
-      while (yOffset < scaledHeight) {
-        if (page > 0) pdf.addPage();
+      for (let start = 0; start < totalPages; start += pagesPerSlice) {
+        const pagesInSlice = Math.min(pagesPerSlice, totalPages - start);
+        const sliceTopCss = start * pageCssHeight;
+        const sliceCssH = Math.min(pagesInSlice * pageCssHeight, totalCssHeight - sliceTopCss);
+        if (sliceCssH <= 0) break;
 
-        const sourceY = (yOffset / scaledHeight) * imgHeight;
-        const sourceH = Math.min((pageContentHeight / scaledHeight) * imgHeight, imgHeight - sourceY);
-        const destH = (sourceH / imgHeight) * scaledHeight;
+        progress('作成中… ' + Math.min(start + pagesInSlice, totalPages) + ' / ' + totalPages + ' ページ');
 
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = imgWidth;
-        tempCanvas.height = Math.ceil(sourceH);
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(captureCanvas, 0, sourceY, imgWidth, sourceH, 0, 0, imgWidth, sourceH);
+        const sliceCanvas = await html2canvas(contentEl, {
+          scale: scale,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          x: elLeft,
+          y: elTop + sliceTopCss,
+          width: cssWidth,
+          height: sliceCssH,
+          windowWidth: 900,
+          scrollX: 0,
+          scrollY: 0
+        });
 
-        const pageImg = tempCanvas.toDataURL('image/jpeg', 0.92);
-        pdf.addImage(pageImg, 'JPEG', margin, margin, contentWidth, destH);
+        const pxPerPageActual = sliceCanvas.height / (sliceCssH / pageCssHeight);
 
-        yOffset += pageContentHeight;
-        page++;
+        for (let p = 0; p < pagesInSlice; p++) {
+          const srcY = Math.round(p * pxPerPageActual);
+          const srcH = Math.min(Math.round(pxPerPageActual), sliceCanvas.height - srcY);
+          if (srcH <= 0) break;
+
+          if (pageIndex > 0) pdf.addPage();
+
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = sliceCanvas.width;
+          tempCanvas.height = srcH;
+          const tempCtx = tempCanvas.getContext('2d');
+          tempCtx.fillStyle = '#ffffff';
+          tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+          tempCtx.drawImage(sliceCanvas, 0, srcY, sliceCanvas.width, srcH, 0, 0, tempCanvas.width, srcH);
+
+          const destH = (srcH / sliceCanvas.width) * contentWidth;
+          pdf.addImage(tempCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentWidth, destH);
+          pageIndex++;
+        }
       }
 
       // ファイル名
@@ -1367,8 +1469,15 @@ h1 {
 
     } catch (err) {
       console.error('PDF生成エラー:', err);
-      alert('PDF生成中にエラーが発生しました。もう一度お試しください。');
+      alert('PDF生成中にエラーが発生しました。\n\n' +
+            ((err && err.message) ? err.message : err) +
+            '\n\n解決しない場合は、ページを再読み込みしてからもう一度お試しください。');
     } finally {
+      contentEl.style.maxWidth = prevMaxW;
+      contentEl.style.width = prevW;
+      contentEl.style.background = prevBg;
+      window.scrollTo(0, prevScrollY);
+      progress('しばらくお待ちください');
       document.getElementById('loadingOverlay').classList.remove('active');
     }
   };
