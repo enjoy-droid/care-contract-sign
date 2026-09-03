@@ -1382,13 +1382,29 @@ h1 {
       const contentWidth = pdfWidth - margin * 2;   // 190mm
       const pageHeightMm = pdfHeight - margin * 2;  // 277mm
 
-      // 一時的にスタイル調整（PDF向け）
-      contentEl.style.maxWidth = '800px';
-      contentEl.style.width = '800px';
-      contentEl.style.background = '#fff';
+      // ---- 撮影用にレイアウトを固定する ----
+      // html2canvas は幅 900px の仮想ウィンドウで複製ページを描画する。
+      // 実画面（中央寄せ・スマホ用スタイル）のままだと複製側と座標がずれ、
+      // 切り出し位置が左右にずれて端が欠ける。
+      // そこで撮影中だけ中央寄せと余白を打ち消し、レスポンシブ指定も
+      // PC 版の値へ固定して、実画面と複製ページのレイアウトを一致させる。
+      const capStyle = document.createElement('style');
+      capStyle.id = '__pdfCaptureStyle';
+      capStyle.textContent = [
+        '.container { max-width: none !important; margin: 0 !important; padding: 0 !important; }',
+        '#contractContent { width: 800px !important; max-width: 800px !important; margin: 0 !important;',
+        '  padding: 40px 36px !important; background: #fff !important; }',
+        '#contractContent .field-group { grid-template-columns: 1fr 1fr !important; }',
+        '#contractContent h1 { font-size: 22px !important; letter-spacing: 6px !important; }',
+        '#contractContent .section-title { font-size: 18px !important; }',
+        '#contractContent .info-table th, #contractContent .info-table td { padding: 8px 12px !important; font-size: 13px !important; }',
+        '#contractContent .fee-table { font-size: 12px !important; }',
+        '#contractContent .fee-table th, #contractContent .fee-table td { padding: 6px 8px !important; }'
+      ].join('\n');
+      document.head.appendChild(capStyle);
 
       window.scrollTo(0, 0);
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 150));
 
       const cssWidth = 800;
       const totalCssHeight = contentEl.scrollHeight;
@@ -1473,6 +1489,8 @@ h1 {
             ((err && err.message) ? err.message : err) +
             '\n\n解決しない場合は、ページを再読み込みしてからもう一度お試しください。');
     } finally {
+      const cs = document.getElementById('__pdfCaptureStyle');
+      if (cs) cs.remove();
       contentEl.style.maxWidth = prevMaxW;
       contentEl.style.width = prevW;
       contentEl.style.background = prevBg;
