@@ -502,14 +502,22 @@ h1 {
   .fee-table th, .fee-table td { padding: 4px 5px; }
 }
 
-/* ---------- 印刷 ---------- */
+/* ---------- 印刷（ブラウザの印刷機能を使う場合） ---------- */
+@page { size: A4; margin: 12mm; }
 @media print {
-  body { background: #fff; }
-  .container { padding: 0; }
-  .contract-paper { box-shadow: none; border: none; padding: 20px; }
-  .btn, .action-bar, .overlay { display: none !important; }
+  body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .container { padding: 0; max-width: none; }
+  .contract-paper { box-shadow: none; border: none; padding: 0; margin: 0; }
+  .btn, .action-bar, .overlay, .sig-buttons { display: none !important; }
+  /* 各書類（重要事項説明・個人情報使用同意・約款・契約書及び同意書）は新しいページから */
+  .section-title { break-before: page; page-break-before: always; }
+  /* 見出しだけがページ末に取り残されないように */
+  .section-title, .sub-section-title, .article-title, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  /* 行・段落・署名欄の途中で改ページしない */
+  p, tr, li, .field, .preamble, .signature-block, .canvas-wrapper { break-inside: avoid; page-break-inside: avoid; }
   .input-section { background: none; border: none; padding: 0; }
-  .field input { border: none; border-bottom: 1px solid #333; border-radius: 0; padding: 4px 0; }
+  .field input { background: transparent !important; border: none; border-bottom: 1px solid #333; border-radius: 0; padding: 4px 0; }
+  input::placeholder { color: transparent; }
 }
 </style>
 </head>
@@ -1365,6 +1373,7 @@ h1 {
     const prevW = contentEl.style.width;
     const prevBg = contentEl.style.background;
     const prevScrollY = window.scrollY;
+    const swapped = [];   // 印刷用に差し替えた入力欄（終了後に元へ戻す）
 
     try {
       // ---- ライブラリの用意（CDN 障害時は別ミラーへ自動切替） ----
@@ -1378,9 +1387,11 @@ h1 {
       const { jsPDF } = window.jspdf;
       const pdfWidth = 210;
       const pdfHeight = 297;
-      const margin = 10;
-      const contentWidth = pdfWidth - margin * 2;   // 190mm
-      const pageHeightMm = pdfHeight - margin * 2;  // 277mm
+      const marginX = 12;        // 左右の余白（mm）
+      const marginTop = 12;      // 上の余白（mm）
+      const marginBottom = 14;   // 下の余白（mm）※ページ番号の分を確保
+      const contentWidth = pdfWidth - marginX * 2;                 // 186mm
+      const pageHeightMm = pdfHeight - marginTop - marginBottom;   // 271mm
 
       // ---- 撮影用にレイアウトを固定する ----
       // html2canvas は幅 900px の仮想ウィンドウで複製ページを描画する。
@@ -1388,28 +1399,136 @@ h1 {
       // 切り出し位置が左右にずれて端が欠ける。
       // そこで撮影中だけ中央寄せと余白を打ち消し、レスポンシブ指定も
       // PC 版の値へ固定して、実画面と複製ページのレイアウトを一致させる。
+      // あわせて、印刷物に不要な画面用の部品（ボタン・枠・入力欄の灰色）を消す。
       const capStyle = document.createElement('style');
       capStyle.id = '__pdfCaptureStyle';
       capStyle.textContent = [
         '.container { max-width: none !important; margin: 0 !important; padding: 0 !important; }',
         '#contractContent { width: 800px !important; max-width: 800px !important; margin: 0 !important;',
-        '  padding: 40px 36px !important; background: #fff !important; }',
+        '  padding: 24px 36px !important; background: #fff !important; border: none !important; box-shadow: none !important; }',
         '#contractContent .field-group { grid-template-columns: 1fr 1fr !important; }',
         '#contractContent h1 { font-size: 22px !important; letter-spacing: 6px !important; }',
         '#contractContent .section-title { font-size: 18px !important; }',
         '#contractContent .info-table th, #contractContent .info-table td { padding: 8px 12px !important; font-size: 13px !important; }',
         '#contractContent .fee-table { font-size: 12px !important; }',
-        '#contractContent .fee-table th, #contractContent .fee-table td { padding: 6px 8px !important; }'
+        '#contractContent .fee-table th, #contractContent .fee-table td { padding: 6px 8px !important; }',
+        '#contractContent .sig-buttons, #contractContent .btn { display: none !important; }',
+        '#contractContent .input-section { background: #fff !important; }',
+        '#contractContent .__printValue { font-size: 14px; line-height: 1.6; padding: 4px 2px; min-height: 28px;',
+        '  border-bottom: 1px solid #888; word-break: break-all; color: #111; }'
       ].join('\n');
       document.head.appendChild(capStyle);
+
+      // 入力欄はそのまま撮影すると、案内文（「氏名を入力」など）が印字され、
+      // 長い住所は欄の幅で切れてしまう。撮影中だけ入力値を普通の文字に置き換える。
+      // 日付は「令和◯年◯月◯日」の表記にする。
+      contentEl.querySelectorAll('.field input').forEach(inp => {
+        if (inp.type === 'checkbox' || inp.type === 'radio') return;
+        let text = inp.value || '';
+        if (inp.type === 'date' && text) {
+          const ymd = text.split('-').map(Number);
+          try {
+            text = new Intl.DateTimeFormat('ja-JP-u-ca-japanese',
+              { era: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+              .format(new Date(ymd[0], ymd[1] - 1, ymd[2]));
+          } catch (e) {
+            text = ymd[0] + '年' + ymd[1] + '月' + ymd[2] + '日';
+          }
+        }
+        const div = document.createElement('div');
+        div.className = '__printValue';
+        div.textContent = text || '\u00a0';
+        inp.style.display = 'none';
+        inp.after(div);
+        swapped.push([inp, div]);
+      });
 
       window.scrollTo(0, 0);
       await new Promise(r => setTimeout(r, 150));
 
       const cssWidth = 800;
+      const mmPerCss = contentWidth / cssWidth;
       const totalCssHeight = contentEl.scrollHeight;
-      const pageCssHeight = cssWidth * (pageHeightMm / contentWidth); // A4 1ページ分
-      const totalPages = Math.max(1, Math.ceil(totalCssHeight / pageCssHeight));
+      const pageCssHeight = pageHeightMm / mmPerCss;   // A4 1ページに入る高さ（CSS px）
+
+      // ---- 改ページ位置を決める ----
+      // 一定の高さで機械的に切ると、文字の行や表の行が上下に分断される。
+      // 段落・表の行・署名欄などを「分割しない単位」として扱い、
+      // 単位と単位のすき間でだけ改ページする。
+      // さらに見出しは次の内容と同じページに置き（見出しだけ取り残さない）、
+      // 「重要事項説明」「個人情報使用同意」「約款」「契約書及び同意書」は
+      // 紙の契約書と同じく新しいページから始める。
+      const baseTop = contentEl.getBoundingClientRect().top;
+      const posOf = el => {
+        const r = el.getBoundingClientRect();
+        return { top: r.top - baseTop, bottom: r.bottom - baseTop };
+      };
+      const ATOMIC = 'p, tr, li, label, h1, h2, h3, .cover-title, .preamble, .section-title, ' +
+                     '.sub-section-title, .article-title, .field, .signature-block, .note-small, ' +
+                     '.input-section, .fee-table';
+      const atoms = [...contentEl.querySelectorAll(ATOMIC)]
+        .filter(el => el.offsetParent !== null)
+        .map(el => Object.assign({ el: el }, posOf(el)))
+        .filter(a => a.bottom - a.top > 0)
+        .sort((x, y) => x.top - y.top);
+
+      // 分割してはいけない区間
+      const keep = atoms.map(a => [a.top, a.bottom]);
+      // 見出しとみなすもの：各種見出し、および太字で始まる短い行（「（１）…」「【利用料金表】…」など）
+      const isHeading = el =>
+        el.matches('.section-title, .sub-section-title, .article-title, h2, h3') ||
+        (el.tagName === 'P' && el.firstElementChild && el.firstElementChild.tagName === 'STRONG' &&
+         el.textContent.trim().startsWith(el.firstElementChild.textContent.trim()) &&
+         el.textContent.trim().length <= 60);
+      const nextAtom = (a, exclude) => atoms.find(b =>
+        b.top >= a.bottom - 1 && !a.el.contains(b.el) && !(exclude && exclude.contains(b.el)));
+      atoms.forEach(a => {
+        if (!isHeading(a.el)) return;
+        let next = nextAtom(a);
+        // 見出しの直後が短い前置き（注記や一行の説明）なら、その次の内容までつなげる
+        if (next && next.bottom - next.top < 40) {
+          const next2 = nextAtom(next, a.el);
+          if (next2) next = next2;
+        }
+        if (next) keep.push([a.top, next.bottom]);
+      });
+      // 署名欄は上の区切り線ごと次のページへ送る（区切り線だけが前のページに残らないように）
+      const sectionTops = [...contentEl.querySelectorAll('.signature-section')].map(el => {
+        const p = posOf(el);
+        const h = el.querySelector('h2');
+        if (h) keep.push([p.top, posOf(h).bottom]);
+        return Math.floor(p.top) - 1;
+      });
+      const canBreakAt = y => !keep.some(k => y > k[0] + 0.5 && y < k[1] - 0.5);
+
+      // 改ページ候補（各単位の上端・下端）
+      const candidates = [...new Set(atoms.flatMap(a => [Math.floor(a.top) - 1, Math.ceil(a.bottom) + 1]).concat(sectionTops))]
+        .filter(y => y > 0 && y < totalCssHeight && canBreakAt(y))
+        .sort((x, y) => x - y);
+
+      // 必ず改ページする位置（各書類の始まり。最初の書類は表紙の次のページから）
+      const forced = [...contentEl.querySelectorAll('.section-title')]
+        .map(el => Math.floor(posOf(el).top) - 1)
+        .filter(y => y > 10)
+        .sort((x, y) => x - y);
+
+      const pages = [];
+      let pos = 0;
+      while (pos < totalCssHeight - 2) {
+        const limit = pos + pageCssHeight;
+        const f = forced.find(y => y > pos + 20 && y <= limit);
+        if (f !== undefined) { pages.push([pos, f]); pos = f; continue; }
+        if (limit >= totalCssHeight) { pages.push([pos, totalCssHeight]); break; }
+        let cut = null;
+        for (let i = candidates.length - 1; i >= 0; i--) {
+          const c = candidates[i];
+          if (c <= limit && c > pos + pageCssHeight * 0.4) { cut = c; break; }
+        }
+        if (cut === null) cut = Math.floor(limit);   // 分割できる場所がない場合のみ機械的に切る
+        pages.push([pos, cut]);
+        pos = cut;
+      }
+      const totalPages = pages.length;
 
       // 【iPad / iPhone 対策 — キャンバスの上限】
       // iOS Safari は 1 枚のキャンバスに面積・辺の長さの上限があり
@@ -1420,11 +1539,16 @@ h1 {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       const scale = isIOS ? 1.5 : 2;
-
       const pxW = cssWidth * scale;
-      const pxPerPage = pageCssHeight * scale;
-      let pagesPerSlice = Math.floor(Math.min(MAX_AREA / (pxW * pxPerPage), MAX_DIM / pxPerPage));
-      if (!isFinite(pagesPerSlice) || pagesPerSlice < 1) pagesPerSlice = 1;
+      const maxSliceCss = Math.min(MAX_AREA / pxW, MAX_DIM) / scale;
+
+      // ページをまとめて描画単位（スライス）にする
+      const slices = [];
+      pages.forEach((p, i) => {
+        const last = slices[slices.length - 1];
+        if (last && p[1] - last.start <= maxSliceCss) { last.end = p[1]; last.pages.push(i); }
+        else slices.push({ start: p[0], end: p[1], pages: [i] });
+      });
 
       const pdf = new jsPDF('p', 'mm', 'a4');
       const elRect = contentEl.getBoundingClientRect();
@@ -1433,13 +1557,9 @@ h1 {
 
       let pageIndex = 0;
 
-      for (let start = 0; start < totalPages; start += pagesPerSlice) {
-        const pagesInSlice = Math.min(pagesPerSlice, totalPages - start);
-        const sliceTopCss = start * pageCssHeight;
-        const sliceCssH = Math.min(pagesInSlice * pageCssHeight, totalCssHeight - sliceTopCss);
-        if (sliceCssH <= 0) break;
-
-        progress('作成中… ' + Math.min(start + pagesInSlice, totalPages) + ' / ' + totalPages + ' ページ');
+      for (const sl of slices) {
+        const sliceCssH = sl.end - sl.start;
+        progress('作成中… ' + (sl.pages[sl.pages.length - 1] + 1) + ' / ' + totalPages + ' ページ');
 
         const sliceCanvas = await html2canvas(contentEl, {
           scale: scale,
@@ -1447,7 +1567,7 @@ h1 {
           backgroundColor: '#ffffff',
           logging: false,
           x: elLeft,
-          y: elTop + sliceTopCss,
+          y: elTop + sl.start,
           width: cssWidth,
           height: sliceCssH,
           windowWidth: 900,
@@ -1455,12 +1575,13 @@ h1 {
           scrollY: 0
         });
 
-        const pxPerPageActual = sliceCanvas.height / (sliceCssH / pageCssHeight);
+        const k = sliceCanvas.height / sliceCssH;   // CSS px → 画像 px
 
-        for (let p = 0; p < pagesInSlice; p++) {
-          const srcY = Math.round(p * pxPerPageActual);
-          const srcH = Math.min(Math.round(pxPerPageActual), sliceCanvas.height - srcY);
-          if (srcH <= 0) break;
+        for (const pi of sl.pages) {
+          const p = pages[pi];
+          const srcY = Math.round((p[0] - sl.start) * k);
+          const srcH = Math.min(Math.round((p[1] - p[0]) * k), sliceCanvas.height - srcY);
+          if (srcH <= 0) continue;
 
           if (pageIndex > 0) pdf.addPage();
 
@@ -1473,9 +1594,21 @@ h1 {
           tempCtx.drawImage(sliceCanvas, 0, srcY, sliceCanvas.width, srcH, 0, 0, tempCanvas.width, srcH);
 
           const destH = (srcH / sliceCanvas.width) * contentWidth;
-          pdf.addImage(tempCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentWidth, destH);
+          // 表紙（最初の書類の前のページ）は、紙の表紙のように上下中央寄りに配置する
+          const isCover = pi === 0 && forced.length > 0 && pages[0][1] === forced[0];
+          const y = isCover ? marginTop + Math.max(0, (pageHeightMm - destH) * 0.35) : marginTop;
+          pdf.addImage(tempCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', marginX, y, contentWidth, destH);
           pageIndex++;
         }
+      }
+
+      // ページ番号（下中央）
+      const nPages = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= nPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(9);
+        pdf.setTextColor(120);
+        pdf.text(i + ' / ' + nPages, pdfWidth / 2, pdfHeight - 7, { align: 'center' });
       }
 
       // ファイル名
@@ -1491,6 +1624,7 @@ h1 {
     } finally {
       const cs = document.getElementById('__pdfCaptureStyle');
       if (cs) cs.remove();
+      swapped.forEach(([inp, div]) => { div.remove(); inp.style.display = ''; });
       contentEl.style.maxWidth = prevMaxW;
       contentEl.style.width = prevW;
       contentEl.style.background = prevBg;
